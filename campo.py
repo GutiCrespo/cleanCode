@@ -1,6 +1,6 @@
 import random         # para gerar números aleatórios
 import sys            # para encerrar o programa
-import time           # para gerar paradas temporárias
+import time           # para gerar paradas timerárias
 import os             # para executar funções do sistema operacional
 
 field = []     # campo total
@@ -15,9 +15,9 @@ tempBomb = "❌"
 tempField = "🟥"
 
 score = 0
-posicao = 0
+position = 0
 
-def iniciarJogo():
+def menu():
     os.system("cls")    
     print("")
     print("Boas-vindas ao Campo Minado!")
@@ -27,18 +27,18 @@ def iniciarJogo():
     print("03 - Regras e Instruções")
     print("04 - Sair do Jogo")
     
-    opcao = input("O que você deseja fazer? ")
+    option = input("O que você deseja fazer? ")
 
-    if opcao == "1" or opcao == "01":
-        nome, hora_inicial = gameStart()  # Inicia o jogo e captura nome e hora inicial
+    if option == "1" or option == "01":
+        name, start_time = gameStart()  
         setTable()
         setBomb()
-        inputUser(nome, hora_inicial)  # Passa nome e hora inicial para a função que gerencia as jogadas
-    elif opcao == "2" or opcao == "02":
+        inputUser(name, start_time) 
+    elif option == "2" or option == "02":
         showRank()
-    elif opcao == "3" or opcao == "03":
+    elif option == "3" or option == "03":
         showRules()
-    elif opcao == "4" or opcao == "04":
+    elif option == "4" or option == "04":
         print("Obrigado por jogar. Volte sempre!")
         time.sleep(1)
         sys.exit()
@@ -46,65 +46,65 @@ def iniciarJogo():
 def gameStart():
     global score
     score = 0
-    nome = input("Insira o seu nome: ")
-    hora_inicial = time.time()
-    return nome, hora_inicial
+    name = input("Insira o seu nome: ")
+    start_time = time.time()
+    return name, start_time
 
-def registerRank(nome, hora_inicial, hora_final):
+def registerRank(name, start_time, end_time):
     global score
-    tempo = hora_final - hora_inicial
+    time = end_time - start_time
 
-    jogadores = []
-    acertos = []
-    tempos = []
+    players = []
+    hits = []
+    times = []
 
     if os.path.isfile("ranking.txt"):
         with open("ranking.txt", "r") as arq:
-            dados = arq.readlines()
+            datas = arq.readlines()
     else:
-        dados = []
+        datas = []
 
-    for linha in dados:
-        partes = linha.strip().split(";")
-        jogadores.append(partes[0])
-        acertos.append(int(partes[1]))
-        tempos.append(float(partes[2]))
+    for line in datas:
+        parts = line.strip().split(";")
+        players.append(parts[0])
+        hits.append(int(parts[1]))
+        times.append(float(parts[2]))
 
-    jogadores.append(nome)
-    acertos.append(score)
-    tempos.append(tempo)
+    players.append(name)
+    hits.append(score)
+    times.append(time)
 
-    juntas = sorted(zip(acertos, tempos, jogadores), key=lambda x: (-x[0], x[1]))
-    acertos2, tempos2, jogadores2 = zip(*juntas)
+    join = sorted(zip(hits, times, players), key=lambda x: (-x[0], x[1]))
+    hits2, times2, players2 = zip(*join)
 
     with open("ranking.txt", "w") as arq:
-        for jogador, acerto, tempo in zip(jogadores2, acertos2, tempos2):
-            arq.write(f"{jogador};{acerto};{tempo:.3f}\n")
+        for player, hit, time in zip(players2, hits2, times2):
+            arq.write(f"{player};{hit};{time:.3f}\n")
 
 def showRank():
-    global posicao
-    posicao = 0
+    global position
+    position = 0
 
     if os.path.isfile("ranking.txt"):
         with open("ranking.txt", "r") as arq:
-            dados = arq.readlines()
+            datas = arq.readlines()
         
         os.system("cls")
-        print("Ranking dos Jogadores:")
-        print(f"{'Posição':>7} {'Nome':>20} {'Acertos':>10} {'Tempo (s)':>12}")
+        print("Ranking dos players:")
+        print(f"{'Posição':>7} {'name':>20} {'hits':>10} {'time (s)':>12}")
 
-        for linha in dados:
-            posicao += 1
-            partes = linha.strip().split(";")
-            jogador, acerto, tempo = partes[0], int(partes[1]), float(partes[2])
-            print(f"{posicao:>7} {jogador:>20} {acerto:>10} {tempo:>12.3f}")
+        for line in datas:
+            position += 1
+            parts = line.strip().split(";")
+            player, hit, time = parts[0], int(parts[1]), float(parts[2])
+            print(f"{position:>7} {player:>20} {hit:>10} {time:>12.3f}")
 
         input("\nPressione Enter para voltar ao menu...")
-        iniciarJogo()
+        menu()
     else:
         print("Nenhum ranking disponível. Jogue uma partida primeiro.")
         time.sleep(2)
-        iniciarJogo()
+        menu()
 
 def showRules():
     os.system("cls")
@@ -114,7 +114,7 @@ def showRules():
     print("3. Se você revelar um quadrado vazio, ele mostrará o número de bombas adjacentes.")
     print("4. Use essa informação para deduzir quais quadrados são seguros.")
     input("\nPressione Enter para voltar ao menu...")
-    iniciarJogo()
+    menu()
 
 def setTable():
     global field
@@ -156,7 +156,7 @@ def setBomb():
                 mine[x][y] = bomb
                 break
 
-def showBombs(x, y, nome, hora_inicial):
+def showBombs(x, y, name, start_time):
     os.system("cls")
 
     for i in range(size):
@@ -174,20 +174,20 @@ def showBombs(x, y, nome, hora_inicial):
 
     time.sleep(2)
 
-    endGame(nome, hora_inicial)
+    endGame(name, start_time)
     
-def inputUser(nome, hora_inicial):
+def inputUser(name, start_time):
     while True:
         showTable()
         x = (int(input(f"Insira a linha que você deseja testar: ")) - 1)
         y = (int(input(f"Insira a coluna que você deseja testar: ")) - 1)
-        bombTest(x, y, nome, hora_inicial)
+        bombTest(x, y, name, start_time)
 
-def bombTest(x, y, nome, hora_inicial):
+def bombTest(x, y, name, start_time):
     global score
 
     if mine[x][y] == bomb:
-        showBombs(x, y, nome, hora_inicial)
+        showBombs(x, y, name, start_time)
     else:
         score += 1
         bombsAround(x, y)
@@ -209,23 +209,23 @@ def bombsAround(x, y):
     else:
         field[x][y] = empty
 
-def endGame(nome, hora_inicial):
-    hora_final = time.time()
-    registerRank(nome, hora_inicial, hora_final)
-    opcao = input("Você deseja jogar novamente? (S/N) ").upper()
+def endGame(name, start_time):
+    end_time = time.time()
+    registerRank(name, start_time, end_time)
+    option = input("Você deseja jogar novamente? (S/N) ").upper()
 
-    if opcao == "N":
-        print(f"Obrigado {nome} pela tentativa.")
+    if option == "N":
+        print(f"Obrigado {name} pela tentativa.")
         print(f"Volte sempre!")
         time.sleep(3.5)
-        iniciarJogo()
-    elif opcao == "S":
-        nome, hora_inicial = gameStart()  # Inicia o jogo e captura nome e hora inicial
+        menu()
+    elif option == "S":
+        name, start_time = gameStart()  # Inicia o jogo e captura name e hora inicial
         setTable()
         setBomb()
-        inputUser(nome, hora_inicial)  # Passa nome e hora inicial para a função que gerencia as jogadas
+        inputUser(name, start_time)  # Passa name e hora inicial para a função que gerencia as jogadas
     else:
         print("Por favor, insira apenas 'S' ou 'N'")
-        endGame(nome, hora_inicial)
+        endGame(name, start_time)
 
-iniciarJogo()
+menu()
