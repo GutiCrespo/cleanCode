@@ -3,22 +3,22 @@ import sys            # para encerrar o programa
 import time           # para gerar paradas temporárias
 import os             # para executar funções do sistema operacional
 
+# Constantes
+BOMB = "💣"
+EMPTY = "⬛"
+DEFAULT = "⬜"
+TEMP_BOMB = "❌"
+TEMP_FIELD = "🟥"
+
+# Variáveis globais
 field = []     # campo total
 mine = []      # local das minas
-
-size = 5      # tamanho do tabuleiro/número de bombas
-
-bomb = "💣"
-empty = "⬛"
-default = "⬜"
-tempBomb = "❌"
-tempField = "🟥"
-
+size = 5       # tamanho do tabuleiro/número de bombas
 score = 0
 posicao = 0
 
-def iniciarJogo():
-    os.system("cls")    
+def iniciar_jogo():
+    os.system("cls")
     print("")
     print("Boas-vindas ao Campo Minado!")
     print("")
@@ -29,28 +29,28 @@ def iniciarJogo():
     
     opcao = input("O que você deseja fazer? ")
 
-    if opcao == "1" or opcao == "01":
-        nome, hora_inicial = gameStart()  # Inicia o jogo e captura nome e hora inicial
-        setTable()
-        setBomb()
-        inputUser(nome, hora_inicial)  # Passa nome e hora inicial para a função que gerencia as jogadas
-    elif opcao == "2" or opcao == "02":
-        showRank()
-    elif opcao == "3" or opcao == "03":
-        showRules()
-    elif opcao == "4" or opcao == "04":
+    if opcao in ["1", "01"]:
+        nome, hora_inicial = game_start()  # Inicia o jogo e captura nome e hora inicial
+        set_table()
+        set_bomb()
+        input_user(nome, hora_inicial)  # Passa nome e hora inicial para a função que gerencia as jogadas
+    elif opcao in ["2", "02"]:
+        show_rank()
+    elif opcao in ["3", "03"]:
+        show_rules()
+    elif opcao in ["4", "04"]:
         print("Obrigado por jogar. Volte sempre!")
         time.sleep(1)
         sys.exit()
 
-def gameStart():
+def game_start():
     global score
     score = 0
     nome = input("Insira o seu nome: ")
     hora_inicial = time.time()
     return nome, hora_inicial
 
-def registerRank(nome, hora_inicial, hora_final):
+def register_rank(nome, hora_inicial, hora_final):
     global score
     tempo = hora_final - hora_inicial
 
@@ -81,7 +81,7 @@ def registerRank(nome, hora_inicial, hora_final):
         for jogador, acerto, tempo in zip(jogadores2, acertos2, tempos2):
             arq.write(f"{jogador};{acerto};{tempo:.3f}\n")
 
-def showRank():
+def show_rank():
     global posicao
     posicao = 0
 
@@ -100,13 +100,13 @@ def showRank():
             print(f"{posicao:>7} {jogador:>20} {acerto:>10} {tempo:>12.3f}")
 
         input("\nPressione Enter para voltar ao menu...")
-        iniciarJogo()
+        iniciar_jogo()
     else:
         print("Nenhum ranking disponível. Jogue uma partida primeiro.")
         time.sleep(2)
-        iniciarJogo()
+        iniciar_jogo()
 
-def showRules():
+def show_rules():
     os.system("cls")
     print("Regras e Instruções do Campo Minado:")
     print("1. O objetivo do jogo é revelar todos os quadrados que não contêm bombas.")
@@ -114,118 +114,157 @@ def showRules():
     print("3. Se você revelar um quadrado vazio, ele mostrará o número de bombas adjacentes.")
     print("4. Use essa informação para deduzir quais quadrados são seguros.")
     input("\nPressione Enter para voltar ao menu...")
-    iniciarJogo()
+    iniciar_jogo()
 
-def setTable():
+def set_table():
     global field
     field = []
 
     for i in range(size):
-        field.append([])
-        for j in range(size):
-            field[i].append(default)
+        row = [DEFAULT] * size
+        field.append(row)
 
-def showTable():
+def show_table():
     os.system("cls")
 
+    # Exibe a linha superior com os números das colunas
+    print("   ", end="")
     for i in range(size):
         print(f"   {i+1}", end="")
     print("\n")
 
+    # Exibe o campo de jogo com os números das linhas
     for i in range(size):
-        print(f"{i+1}", end="")
+        print(f" {i+1} ", end="")
         for j in range(size):
             print(f" {field[i][j]} ", end="")
         print("\n")
 
-def setBomb():
-    global mine 
-    mine = [] 
-        
-    for i in range(size):
-        mine.append([])
-        for j in range(size):
-            mine[i].append(empty)
+def set_bomb():
+    global mine
+    mine = []
 
     for i in range(size):
+        row = [EMPTY] * size
+        mine.append(row)
+
+    for _ in range(size):
         while True:
-            x = random.randint(0, size-1)        
+            x = random.randint(0, size-1)
             y = random.randint(0, size-1)
-
-            if mine[x][y] != bomb:
-                mine[x][y] = bomb
+            if mine[x][y] != BOMB:
+                mine[x][y] = BOMB
                 break
 
-def showBombs(x, y, nome, hora_inicial):
-    os.system("cls")
+#---------------------------------cleanCode Leontino--------------------------------
 
+def show_bombs(x, y, player_name, start_time):
+    """
+    Exibe o campo com todas as bombas e informa ao jogador que ele perdeu.
+    
+    :param x: Posição x da célula onde a bomba foi encontrada
+    :param y: Posição y da célula onde a bomba foi encontrada
+    :param player_name: Nome do jogador
+    :param start_time: Hora inicial do jogo
+    """
+    os.system("cls")
+    
+    # Exibe a linha superior com os números das colunas
+    print("   ", end="")
     for i in range(size):
         print(f"   {i+1}", end="")
     print("\n")
-
+    
+    # Exibe o campo de minas com os números das linhas
     for i in range(size):
-        print(f"{i+1}", end="")
+        print(f" {i+1} ", end="")
         for j in range(size):
             print(f" {mine[i][j]} ", end="")
         print("\n")
     
     print(f"Bomb! Você perdeu.")
     print(f"Você inseriu linha {x+1} coluna {y+1}")
-
-    time.sleep(2)
-
-    endGame(nome, hora_inicial)
     
-def inputUser(nome, hora_inicial):
-    while True:
-        showTable()
-        x = (int(input(f"Insira a linha que você deseja testar: ")) - 1)
-        y = (int(input(f"Insira a coluna que você deseja testar: ")) - 1)
-        bombTest(x, y, nome, hora_inicial)
+    time.sleep(2)
+    end_game(player_name, start_time)
 
-def bombTest(x, y, nome, hora_inicial):
+def input_user(player_name, start_time):
+    """
+    Solicita ao usuário as coordenadas da célula que deseja revelar.
+    
+    :param player_name: Nome do jogador
+    :param start_time: Hora inicial do jogo
+    """
+    while True:
+        show_table()
+        try:
+            x = int(input("Insira a linha que você deseja testar: ")) - 1
+            y = int(input("Insira a coluna que você deseja testar: ")) - 1
+            if 0 <= x < size and 0 <= y < size:
+                bomb_test(x, y, player_name, start_time)
+            else:
+                print(f"Por favor, insira valores entre 1 e {size}.")
+        except ValueError:
+            print("Por favor, insira valores válidos.")
+
+def bomb_test(x, y, player_name, start_time):
+    """
+    Verifica se a célula escolhida pelo jogador contém uma bomba ou não.
+    
+    :param x: Posição x da célula
+    :param y: Posição y da célula
+    :param player_name: Nome do jogador
+    :param start_time: Hora inicial do jogo
+    """
     global score
 
-    if mine[x][y] == bomb:
-        showBombs(x, y, nome, hora_inicial)
+    if mine[x][y] == BOMB:
+        show_bombs(x, y, player_name, start_time)
     else:
         score += 1
-        bombsAround(x, y)
+        count_bombs_around(x, y)
 
-def bombsAround(x, y):
-    x = int(x)
-    y = int(y)
+def count_bombs_around(x, y):
+    """
+    Conta o número de bombas ao redor de uma célula e atualiza o campo de jogo.
+    
+    :param x: Posição x da célula
+    :param y: Posição y da célula
+    """
+    bombs_count = 0
 
-    bombsCount = 0
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < size and 0 <= ny < size and mine[nx][ny] == BOMB:
+                bombs_count += 1
 
-    for lineNumber in range(-1, 2):
-        for columnNumber in range(-1, 2):
-            if 0 <= x + lineNumber < size and 0 <= y + columnNumber < size:
-                if mine[x + lineNumber][y + columnNumber] == bomb:
-                    bombsCount += 1
-                
-    if bombsCount > 0:
-        field[x][y] = bombsCount
-    else:
-        field[x][y] = empty
+    field[x][y] = bombs_count if bombs_count > 0 else EMPTY
 
-def endGame(nome, hora_inicial):
-    hora_final = time.time()
-    registerRank(nome, hora_inicial, hora_final)
-    opcao = input("Você deseja jogar novamente? (S/N) ").upper()
+def end_game(player_name, start_time):
+    """
+    Finaliza o jogo, registra a pontuação e pergunta ao jogador se deseja jogar novamente.
+    
+    :param player_name: Nome do jogador
+    :param start_time: Hora inicial do jogo
+    """
+    end_time = time.time()
+    register_rank(player_name, start_time, end_time)
+    option = input("Você deseja jogar novamente? (S/N) ").upper()
 
-    if opcao == "N":
-        print(f"Obrigado {nome} pela tentativa.")
-        print(f"Volte sempre!")
+    if option == "N":
+        print(f"Obrigado {player_name} pela tentativa.")
+        print("Volte sempre!")
         time.sleep(3.5)
-        iniciarJogo()
-    elif opcao == "S":
-        nome, hora_inicial = gameStart()  # Inicia o jogo e captura nome e hora inicial
-        setTable()
-        setBomb()
-        inputUser(nome, hora_inicial)  # Passa nome e hora inicial para a função que gerencia as jogadas
+        iniciar_jogo()
+    elif option == "S":
+        player_name, start_time = game_start()
+        set_table()
+        set_bomb()
+        input_user(player_name, start_time)
     else:
         print("Por favor, insira apenas 'S' ou 'N'")
-        endGame(nome, hora_inicial)
+        end_game(player_name, start_time)
 
-iniciarJogo()
+# Inicia o jogo
+iniciar_jogo()
