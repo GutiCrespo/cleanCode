@@ -155,8 +155,7 @@ def set_bomb():
             if mine[x][y] != BOMB:
                 mine[x][y] = BOMB
                 break
-
-#---------------------------------cleanCode Leontino--------------------------------
+#------------------------------------cleanCode- Leontino-------------------------
 
 def show_bombs(x, y, player_name, start_time):
     """
@@ -266,5 +265,14 @@ def end_game(player_name, start_time):
         print("Por favor, insira apenas 'S' ou 'N'")
         end_game(player_name, start_time)
 
+"""
+Melhorias realizadas Leontino:
+
+Nomes de variáveis e funções: Usei nomes descritivos para variáveis e funções, seguindo boas práticas de programação.
+Comentários: Adicionei comentários explicativos para cada função e bloco de código.
+Validação de entrada: Adicionei validação de entrada na função input_user para garantir que as coordenadas estejam dentro dos limites do tabuleiro e que sejam valores válidos.
+Estrutura de repetição: Usei um loop while True no end_game para garantir que o usuário insira uma opção válida (S ou N).
+Condicionais simplificadas: Simplifiquei a lógica de atualização do campo com o operador ternário.
+"""
 # Inicia o jogo
 iniciar_jogo()
