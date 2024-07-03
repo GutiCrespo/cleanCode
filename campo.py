@@ -17,7 +17,7 @@ size = 5       # tamanho do tabuleiro/número de bombas
 score = 0
 posicao = 0
 
-def iniciar_jogo():
+def menu():
     os.system("cls")
     print("")
     print("Boas-vindas ao Campo Minado!")
@@ -100,11 +100,13 @@ def show_rank():
             print(f"{posicao:>7} {jogador:>20} {acerto:>10} {tempo:>12.3f}")
 
         input("\nPressione Enter para voltar ao menu...")
-        iniciar_jogo()
+        menu()
     else:
         print("Nenhum ranking disponível. Jogue uma partida primeiro.")
         time.sleep(2)
-        iniciar_jogo()
+        menu()
+
+#------------------------------------cleanCode- Natália-------------------------
 
 def show_rules():
     os.system("cls")
@@ -114,47 +116,51 @@ def show_rules():
     print("3. Se você revelar um quadrado vazio, ele mostrará o número de bombas adjacentes.")
     print("4. Use essa informação para deduzir quais quadrados são seguros.")
     input("\nPressione Enter para voltar ao menu...")
-    iniciar_jogo()
+    menu()
 
 def set_table():
     global field
-    field = []
-
-    for i in range(size):
-        row = [DEFAULT] * size
-        field.append(row)
+    field = [[DEFAULT for _ in range(size)] for _ in range(size)]
 
 def show_table():
     os.system("cls")
 
-    # Exibe a linha superior com os números das colunas
-    print("   ", end="")
-    for i in range(size):
-        print(f"   {i+1}", end="")
-    print("\n")
+    header = "  " + " ".join(f"{i+1} " for i in range(size))
+    print(header + "\n")
 
-    # Exibe o campo de jogo com os números das linhas
     for i in range(size):
-        print(f" {i+1} ", end="")
-        for j in range(size):
-            print(f" {field[i][j]} ", end="")
-        print("\n")
+        row = f"{i+1} " + " ".join(str(field[i][j]) for j in range(size))
+        print(row)
 
 def set_bomb():
     global mine
-    mine = []
+    mine = [[EMPTY for _ in range(size)] for _ in range(size)]
+    
+    bomb_positions = set()
+    while len(bomb_positions) < size:
+        x = random.randint(0, size - 1)
+        y = random.randint(0, size - 1)
+        bomb_positions.add((x, y))
+    
+    for x, y in bomb_positions:
+        mine[x][y] = BOMB
 
-    for i in range(size):
-        row = [EMPTY] * size
-        mine.append(row)
+"""
+Melhorias realizadas Natália:
 
-    for _ in range(size):
-        while True:
-            x = random.randint(0, size-1)
-            y = random.randint(0, size-1)
-            if mine[x][y] != BOMB:
-                mine[x][y] = BOMB
-                break
+Nomes de variáveis e funções: Transferi nomes de variáveis para o inglês em padrão minúsculo com underline para melhor padronização
+
+- show_rules() Modifiquei o sentido da nomenclatura da função iniciar jogo para: "menu" pois, já havia uma função chamada start_game com o propósito de realmente
+iniciar a jogatina
+
+- set_table() Modifiquei para torná-la mais legível ao eliminar o loop desnecessário e criar o campo de forma mais direta
+
+- show_table() eliminei o uso repetido de prints e otimizei a formatação da saída
+
+- set_bomb() inicializei a matriz de forma mais direta e usei um conjunto (bomb_positions) para rastrear as posições das bombas 
+garantindo que cada posição seja única sem a necessidade de um loop grande
+
+"""
 #------------------------------------cleanCode- Leontino-------------------------
 
 def show_bombs(x, y, player_name, start_time):
@@ -255,7 +261,7 @@ def end_game(player_name, start_time):
         print(f"Obrigado {player_name} pela tentativa.")
         print("Volte sempre!")
         time.sleep(3.5)
-        iniciar_jogo()
+        menu()
     elif option == "S":
         player_name, start_time = game_start()
         set_table()
@@ -275,4 +281,4 @@ Estrutura de repetição: Usei um loop while True no end_game para garantir que 
 Condicionais simplificadas: Simplifiquei a lógica de atualização do campo com o operador ternário.
 """
 # Inicia o jogo
-iniciar_jogo()
+menu()
