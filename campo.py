@@ -110,6 +110,8 @@ def display_ranking():
 Melhorias realizadas Gustavo:
 
 Nomes de variáveis e funções: Usei nomes descritivos para variáveis e funções, seguindo boas práticas de programação.
+Funções com ação úinica: criei a função "clear_screen", para ser chamada sempre que o programador deseja limpar a tela.
+Retirada de constantes não utilizadas: limpei as consts "temporárias", utilizadas somente para leitura do projeto durante a criação do mesmo.
 Comentários: Adicionei comentários explicativos em algumas funções, para facilitar a compreensão.
 Padronização: atualizei os nomes da variáveis para minusculo separado por underline, conforme combinado com o resto do grupo e criando a correta padronização.
 """
